@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+  <meta charset="UTF-8">
+  <title>Prodify AI - Maga Komanda Mərkəzi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background: #0b0f19; color: #f8fafc; display: flex; height: 100vh; overflow: hidden; }
+    
+    /* Sol Menü */
+    .sidebar { width: 260px; background: #111827; border-right: 1px solid #1f2937; display: flex; flex-direction: column; padding: 20px; }
+    .logo { font-size: 20px; font-weight: 700; color: #38bdf8; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+    .menu-item { padding: 12px 15px; border-radius: 8px; color: #9ca3af; cursor: pointer; margin-bottom: 5px; transition: 0.2s; font-size: 14px; font-weight: 500; }
+    .menu-item:hover, .menu-item.active { background: #1f2937; color: #fff; }
+
+    /* Ana İçerik Alanı */
+    .main-content { flex: 1; display: flex; flex-direction: column; background: #0b0f19; overflow: hidden; }
+    header { height: 70px; border-bottom: 1px solid #1f2937; display: flex; align-items: center; justify-content: space-between; padding: 0 30px; background: #111827; flex-shrink: 0; }
+    .header-title { font-size: 18px; font-weight: 650; color: #e2e8f0; }
+    .user-badge { background: #1f2937; padding: 6px 12px; border-radius: 20px; font-size: 13px; color: #38bdf8; border: 1px solid #374151; }
+
+    /* Dashboard Gövdesi */
+    .dashboard-body { padding: 30px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+    .card { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+    .card h3 { font-size: 16px; margin-bottom: 15px; color: #f1f5f9; display: flex; align-items: center; gap: 8px; }
+
+    /* Input & Textarea */
+    textarea, input[type="text"] { width: 100%; background: #0b0f19; color: #fff; border: 1px solid #374151; border-radius: 8px; padding: 12px; font-size: 14px; outline: none; transition: 0.2s; }
+    textarea:focus, input[type="text"]:focus { border-color: #38bdf8; }
+    textarea { height: 90px; resize: none; }
+    
+    .btn-container { display: flex; justify-content: flex-end; margin-top: 10px; gap: 10px; }
+    button { background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%); color: white; border: none; padding: 10px 24px; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+    button:hover { opacity: 0.9; }
+    .btn-success { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); }
+    .btn-purple { background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%); }
+
+    /* Çıktı Kutusu ve Kod Editörü */
+    .output { background: #0b0f19; padding: 15px; border-radius: 8px; margin-top: 10px; white-space: pre-wrap; border: 1px solid #1f2937; font-family: monospace; font-size: 13px; color: #cbd5e1; max-height: 300px; overflow-y: auto; }
+    .code-box { width: 100%; height: 450px; background: #030712; color: #38bdf8; border: 1px solid #1f2937; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 12px; resize: vertical; outline: none; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">⚡ Prodify AI</div>
+    <div class="menu-item active" onclick="menuSec('panel', this)">🏠 Patron Paneli</div>
+    <div class="menu-item" onclick="menuSec('editor', this)">💻 Canlı Kod Editörü</div>
+    <div class="menu-item" onclick="menuSec('github', this)">🐙 GitHub İnteqrasiyası</div>
+    <div class="menu-item" onclick="menuSec('ajanlar', this)">🤖 İşçi Ajanlar</div>
+    <div class="menu-item" onclick="menuSec('raporlar', this)">📊 Sistem Raporları</div>
+  </div>
+
+  <div class="main-content">
+    <header>
+      <div class="header-title" id="baslik">Maga AI - Komanda Mərkəzi</div>
+      <div class="user-badge">👑 Patron: Məhəmməd</div>
+    </header>
+
+    <div class="dashboard-body" id="icerik">
+      <div class="card">
+        <h3>🤖 Ajanlara Yeni Əmr Göndər</h3>
+        <textarea id="emir" placeholder="Məsələn: server.js faylını optimallaşdır..."></textarea>
+        <div class="btn-container">
+          <button onclick="emriGonder()">Əmri İcra Et</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>📊 Ajanların Hesabatı / Cavablar</h3>
+        <div id="sonuc" class="output">Sistem tam hazırdır, patron əmrini gözləyir...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function menuSec(tur, element) {
+      document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+      element.classList.add('active');
+      
+      const icerik = document.getElementById('icerik');
+      const baslik = document.getElementById('baslik');
+
+      if(tur === 'panel') {
+        baslik.innerText = "Maga AI - Komanda Mərkəzi";
+        icerik.innerHTML = `
+          <div class="card">
+            <h3>🤖 Ajanlara Yeni Əmr Göndər</h3>
+            <textarea id="emir" placeholder="Məsələn: server.js faylını optimallaşdır..."></textarea>
+            <div class="btn-container">
+              <button onclick="emriGonder()">Əmri İcra Et</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>📊 Ajanların Hesabatı / Cavablar</h3>
+            <div id="sonuc" class="output">Sistem tam hazırdır, patron əmrini gözləyir...</div>
+          </div>
+        `;
+      } else if(tur === 'editor') {
+        baslik.innerText = "Canlı Kod Editörü (server.js)";
+        fetch('/kod-oku').then(r => r.json()).then(data => {
+          icerik.innerHTML = `
+            <div class="card">
+              <h3>💻 server.js Qaynaq Kodu</h3>
+              <textarea class="code-box" id="kodAlani">${data.kod}</textarea>
+              <div class="btn-container">
+                <button class="btn-success" onclick="koduKaydet()">Kodu Yadda Saxla (Save)</button>
+              </div>
+              <div id="kayitDurumu" style="margin-top: 10px; font-size: 13px; color: #38bdf8;"></div>
+            </div>
+          `;
+          const box = document.getElementById('kodAlani');
+          if(box) box.scrollTop = 0;
+        });
+      } else if(tur === 'github') {
+        baslik.innerText = "GitHub İnteqrasiyası";
+        icerik.innerHTML = `
+          <div class="card">
+            <h3>🐙 Repoya Kod Göndər (Git Push)</h3>
+            <p style="color: #9ca3af; font-size: 13px; margin-bottom: 15px;">Dəyişiklikləri qeyd edin və GitHub-a avtomatik göndərin.</p>
+            <div style="margin-bottom: 15px;">
+              <label style="font-size: 13px; color: #cbd5e1; display: block; margin-bottom: 5px;">Commit Mesajı:</label>
+              <input type="text" id="commitMesaji" value="Prodify AI avtomatik yenilənmə" />
+            </div>
+            <div class="btn-container">
+              <button class="btn-purple" onclick="gitPushEt()">GitHub-a Göndər (Push)</button>
+            </div>
+            <div id="gitDurumu" class="output" style="margin-top: 15px; display: none;"></div>
+          </div>
+        `;
+      } else if(tur === 'ajanlar') {
+        baslik.innerText = "İşçi Ajanlar - Sistem Statusu";
+        icerik.innerHTML = `
+          <div class="card">
+            <h3>🤖 Aktiv Ajan Statusları</h3>
+            <p style="color: #9ca3af; font-size: 14px; line-height: 1.6;">
+              • <b>Groq AI Engine:</b> Aktiv.<br>
+              • <b>GitHub İnteqrasiyası:</b> Aktiv.<br>
+              • <b>Canlı Editör:</b> Aktiv.
+            </p>
+          </div>
+        `;
+      } else if(tur === 'raporlar') {
+        baslik.innerText = "Sistem Raporları";
+        fetch('/son-rapor').then(r => r.json()).then(data => {
+          icerik.innerHTML = `
+            <div class="card">
+              <h3>📊 Son İcra Hesabatı</h3>
+              <div class="output" style="max-height: 400px;">${data.rapor}</div>
+            </div>
+          `;
+        });
+      }
+    }
+
+    async function emriGonder() {
+      const emir = document.getElementById('emir').value;
+      if(!emir.trim()) return;
+      document.getElementById('sonuc').innerText = "İşçilər iş başında, tapşırıq icra olunur...";
+      const res = await fetch('/calis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ emir })
+      });
+      const data = await res.json();
+      document.getElementById('sonuc').innerText = data.rapor;
+    }
+
+    async function koduKaydet() {
+      const kod = document.getElementById('kodAlani').value;
+      const durum = document.getElementById('kayitDurumu');
+      durum.innerText = "Yadda saxlanılır...";
+      const res = await fetch('/kod-kaydet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kod })
+      });
+      const data = await res.json();
+      durum.innerText = data.mesaj;
+    }
+
+    async function gitPushEt() {
+      const mesaj = document.getElementById('commitMesaji').value;
+      const durum = document.getElementById('gitDurumu');
+      durum.style.display = 'block';
+      durum.innerText = "Git əmrləri icra olunur (add, commit, push)...";
+      
+      const res = await fetch('/git-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mesaj })
+      });
+      const data = await res.json();
+      durum.innerText = data.sonuc;
+    }
+  </script>
+</body>
+</html>

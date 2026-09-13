@@ -1,0 +1,1 @@
+Burdan nələr edə bilirsən?
