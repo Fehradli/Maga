@@ -39,7 +39,7 @@ const server = http.createServer((req, res) => {
       try {
         const data = JSON.parse(body);
         const msg = data.mesaj || "Prodify AI update";
-        const gitKomutlari = `git add . && git commit -m "${msg}" && git push`;
+        const gitKomutlari = `git add . && (git diff --cached --quiet || git commit -m "Prodify AI avtomatik yenilənmə") && git push`;
         
         exec(gitKomutlari, (err, stdout, stderr) => {
           if (err) {
